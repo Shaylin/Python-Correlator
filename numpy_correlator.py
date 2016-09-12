@@ -1,29 +1,23 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import scipy.signal as sig
+import matplotlib.pyplot as plt
 import time
-from multiprocessing.pool import ThreadPool
 
 def main():
 	N_INPUTS = 2
 	N_OUTPUTS = int(N_INPUTS*(N_INPUTS+1)/2)
-	SIG_SIZE = 1000000
+	SIG_SIZE = 1000
 	
-	#Generating the input signals in threads
-	pool = ThreadPool(processes=N_INPUTS)	
+	#Generating the input signals
 	inputArray = [None]*N_INPUTS
 	outputArray = [None]*N_OUTPUTS
-	threadArray = [None]*N_INPUTS
 	for i in range(N_INPUTS):
-		threadArray[i] = pool.apply_async(sigGen, (150.0, 8000, SIG_SIZE, True))
+		inputArray[i] = sigGen(150.0, 8000, SIG_SIZE, True)
+
+	plt.figure(1)
 	for i in range(N_INPUTS):
-		inputArray[i] = threadArray[i].get()
-	
-	#plt.figure(1)
-	#for i in range(N_INPUTS):
-		#plt.subplot(N_INPUTS,1,i+1)
-		#plt.plot(inputArray[i])
-	#plt.show()
+		plt.subplot(N_INPUTS,1,i+1)
+		plt.plot(inputArray[i])
+	plt.show()
 	
 	totalstart = time.clock()
 	fftstart = time.clock()
@@ -65,9 +59,13 @@ def sigGen(f, fs, size, noise=False):
 	else:
 		y = np.sin(2*np.pi*f*n/fs)
 		
-	padAmount = int(2**np.ceil(np.log2(2*size))) - size
-	y = np.pad(y,(0,padAmount),'constant',constant_values=(0,0))
-	return y
+	padAmount = int(2**np.ceil(np.log2(2*size)))
+	yzer = np.zeros(padAmount)
+	
+	for i in range(size):
+		yzer[i] = yzer[i]+y[i]
+	
+	return yzer
 
 def RFFT(inputArray):
 	for i in range(len(inputArray)):
