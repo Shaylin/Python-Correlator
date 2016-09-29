@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import time
 
 def main():
@@ -9,10 +9,13 @@ def main():
 	resFile = open("cpures.csv","w")
 	
 	for k in range(2,17):
+		#resFile = open("cpu"+str(k)+".csv", "w");
+		print("ANT: "+str(k))
 		N_INPUTS = k
 		N_OUTPUTS = int(N_INPUTS*(N_INPUTS+1)/2)
 		resFile.write(str(k)+"\n")
 		for j in range(15):
+			print("ITER: "+str(j))
 			SIG_SIZE = benchsizes[j]
 			
 			#Generating the input signals
@@ -25,18 +28,18 @@ def main():
 			multtime=0;
 			
 			for i in range(11):
-				totalstart = time.clock()
-				fftstart = time.clock()
+				totalstart = time.time()
+				fftstart = time.time()
 				
 				RFFT(inputArray)
 				
-				fftend = time.clock()
-				multstart = time.clock()
+				fftend = time.time()
+				multstart = time.time()
 				
 				crossMult(inputArray, outputArray)
 				
-				multend = time.clock()
-				totalend = time.clock()
+				multend = time.time()
+				totalend = time.time()
 				
 				if(i!=0):
 					ffttime=ffttime+(fftend-fftstart)
@@ -47,6 +50,7 @@ def main():
 			#print("Mult Time: "+str(multtime*1000/10.0)+" ms")
 			
 		resFile.write("\n")
+		#resFile.close()
 	return 0
     
     
